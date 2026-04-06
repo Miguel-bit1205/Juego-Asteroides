@@ -3,7 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
     <title>Juego Asteroide</title>
   </head>
   <body></body>
+  <script>
+    document.addEventListener("keydown", function (evento) {
+      if (evento.key === "ArrowLeft") {
+        console.log("izquierda");
+      }
+
+      if (evento.key === "ArrowRight") {
+        console.log("derecha");
+      }
+
+      if (evento.key === "ArrowUp") {
+        console.log("Avanza");
+      }
+
+      if (evento.key === " ") {
+        console.log("disparo");
+      }
+    });
+  </script>
 </html>
