@@ -7,14 +7,19 @@
     <title>Juego Asteroide</title>
   </head>
   <body>
+    <div id="HUD">
+      <p>Vida:</p>
+      <p>Puntos:</p>
+    </div>
     <canvas id="Juego"></canvas>
     <script>
       const canvas = document.getElementById("Juego");
       const ctx = canvas.getContext("2d");
+      const hud = document.getElementById("HUD");
 
       function ajustarCanvas() {
         canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.height = window.innerHeight - hud.offsetHeight;
       }
 
       ajustarCanvas();
