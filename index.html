@@ -6,24 +6,72 @@
     <link rel="stylesheet" href="styles.css" />
     <title>Juego Asteroide</title>
   </head>
-  <body></body>
-  <script>
-    document.addEventListener("keydown", function (evento) {
-      if (evento.key === "ArrowLeft") {
-        console.log("izquierda");
+  <body>
+    <canvas id="Juego"></canvas>
+    <script>
+      const canvas = document.getElementById("Juego");
+      const ctx = canvas.getContext("2d");
+
+      function ajustarCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
       }
 
-      if (evento.key === "ArrowRight") {
-        console.log("derecha");
+      ajustarCanvas();
+      window.addEventListener("resize", ajustarCanvas);
+
+      let nave = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        angulo: 0,
+      };
+
+      function dibujarNave() {
+        ctx.save();
+        ctx.translate(nave.x, nave.y);
+        ctx.rotate((nave.angulo * Math.PI) / 180);
+
+        ctx.beginPath();
+        ctx.moveTo(20, 0);
+        ctx.lineTo(-15, -10);
+        ctx.lineTo(-15, 10);
+        ctx.closePath();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.stroke();
+
+        ctx.restore();
       }
 
-      if (evento.key === "ArrowUp") {
-        console.log("Avanza");
+      function dibujar() {
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        dibujarNave();
+        requestAnimationFrame(dibujar);
       }
 
-      if (evento.key === " ") {
-        console.log("disparo");
-      }
-    });
-  </script>
+      document.addEventListener("keydown", function (evento) {
+        if (evento.key === "ArrowLeft") {
+          nave.angulo -= 10;
+        }
+
+        if (evento.key === "ArrowRight") {
+          nave.angulo += 10;
+        }
+
+        if (evento.key === "ArrowUp") {
+          let radianes = (nave.angulo * Math.PI) / 180;
+          nave.x += Math.cos(radianes) * 5;
+          nave.y += Math.sin(radianes) * 5;
+        }
+
+        if (evento.key === " ") {
+        }
+      });
+
+      dibujar();
+    </script>
+  </body>
 </html>
