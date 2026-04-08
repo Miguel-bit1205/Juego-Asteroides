@@ -53,6 +53,15 @@
       function dibujar() {
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (
+          nave.x < 0 ||
+          nave.x > canvas.width ||
+          nave.y < 0 ||
+          nave.y > canvas.height
+        ) {
+          nave.x = canvas.width / 2;
+          nave.y = canvas.height / 2;
+        }
         dibujarNave();
         requestAnimationFrame(dibujar);
       }

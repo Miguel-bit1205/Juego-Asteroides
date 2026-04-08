@@ -13,3 +13,7 @@ p {
   color: aliceblue;
   font-size: 30px;
 }
+
+#HUD {
+  border-bottom: 2px solid white;
+}
