@@ -30,6 +30,8 @@
         y: canvas.height / 2,
         angulo: 0,
       };
+      let disparos = [];
+      let puedeDisparar = true;
 
       function dibujarNave() {
         ctx.save();
@@ -50,6 +52,53 @@
         ctx.restore();
       }
 
+      function crearDisparo() {
+        let radianes = (nave.angulo * Math.PI) / 180;
+
+        let disparo = {
+          x: nave.x + Math.cos(radianes) * 20,
+          y: nave.y + Math.sin(radianes) * 20,
+          dx: Math.cos(radianes) * 8,
+          dy: Math.sin(radianes) * 8,
+          radio: 3,
+        };
+
+        disparos.push(disparo);
+      }
+
+      function actualizarDisparos() {
+        for (let i = 0; i < disparos.length; i++) {
+          disparos[i].x += disparos[i].dx;
+          disparos[i].y += disparos[i].dy;
+        }
+      }
+
+      function dibujarDisparos() {
+        for (let i = 0; i < disparos.length; i++) {
+          ctx.beginPath();
+          ctx.arc(
+            disparos[i].x,
+            disparos[i].y,
+            disparos[i].radio,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fillStyle = "#ffffff";
+          ctx.fill();
+        }
+      }
+
+      function limpiarDisparos() {
+        disparos = disparos.filter(function (disparo) {
+          return (
+            disparo.x >= 0 &&
+            disparo.x <= canvas.width &&
+            disparo.y >= 0 &&
+            disparo.y <= canvas.height
+          );
+        });
+      }
+
       function dibujar() {
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -62,6 +111,11 @@
           nave.x = canvas.width / 2;
           nave.y = canvas.height / 2;
         }
+
+        actualizarDisparos();
+        limpiarDisparos();
+        dibujarDisparos();
+
         dibujarNave();
         requestAnimationFrame(dibujar);
       }
@@ -82,6 +136,14 @@
         }
 
         if (evento.key === " ") {
+          if (puedeDisparar) {
+            crearDisparo();
+            puedeDisparar = false;
+
+            setTimeout(() => {
+              puedeDisparar = true;
+            }, 100);
+          }
         }
       });
 
