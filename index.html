@@ -8,7 +8,7 @@
   </head>
   <body>
     <div id="HUD">
-      <p>Vida:</p>
+      <p>Vida: <span id="vidas">3</span></p>
       <p>Puntos:</p>
     </div>
     <canvas id="Juego"></canvas>
@@ -32,6 +32,10 @@
       };
       let disparos = [];
       let puedeDisparar = true;
+
+      let vidas = 3;
+      let vidasSpan = document.getElementById("vidas");
+      let gameOver = false;
 
       function dibujarNave() {
         ctx.save();
@@ -99,28 +103,53 @@
         });
       }
 
+      function perderVida() {
+        if (gameOver) return;
+
+        vidas--;
+
+        if (vidas < 0) {
+          vidas = 0;
+        }
+
+        vidasSpan.textContent = vidas;
+
+        if (vidas <= 0) {
+          gameOver = true;
+        } else {
+          nave.x = canvas.width / 2;
+          nave.y = canvas.height / 2;
+          nave.angulo = 0;
+        }
+      }
+
       function dibujar() {
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        if (
-          nave.x < 0 ||
-          nave.x > canvas.width ||
-          nave.y < 0 ||
-          nave.y > canvas.height
-        ) {
-          nave.x = canvas.width / 2;
-          nave.y = canvas.height / 2;
+
+        if (!gameOver) {
+          if (
+            nave.x < 0 ||
+            nave.x > canvas.width ||
+            nave.y < 0 ||
+            nave.y > canvas.height
+          ) {
+            perderVida();
+          }
+
+          actualizarDisparos();
+          limpiarDisparos();
         }
 
-        actualizarDisparos();
-        limpiarDisparos();
+        dibujarNave();
         dibujarDisparos();
 
-        dibujarNave();
         requestAnimationFrame(dibujar);
       }
 
       document.addEventListener("keydown", function (evento) {
+        if (gameOver) return;
+
         if (evento.key === "ArrowLeft") {
           nave.angulo -= 10;
         }
