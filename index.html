@@ -37,6 +37,8 @@
       let vidasSpan = document.getElementById("vidas");
       let gameOver = false;
 
+      let asteroides = [];
+
       function dibujarNave() {
         ctx.save();
         ctx.translate(nave.x, nave.y);
@@ -123,6 +125,80 @@
         }
       }
 
+      function crearAsteroide() {
+        let borde = Math.floor(Math.random() * 4);
+        let x, y;
+
+        if (borde === 0) {
+          x = Math.random() * canvas.width;
+          y = 0;
+        } else if (borde === 1) {
+          x = canvas.width;
+          y = Math.random() * canvas.height;
+        } else if (borde === 2) {
+          x = Math.random() * canvas.width;
+          y = canvas.height;
+        } else {
+          x = 0;
+          y = Math.random() * canvas.height;
+        }
+
+        let angulo = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
+        let velocidad = 2;
+
+        return {
+          x: x,
+          y: y,
+          radio: 20,
+
+          vx: Math.cos(angulo) * velocidad,
+          vy: Math.sin(angulo) * velocidad,
+        };
+      }
+
+      for (let i = 0; i < 3; i++) {
+        asteroides.push(crearAsteroide());
+      }
+
+      setInterval(function () {
+        if (!gameOver) {
+          asteroides.push(crearAsteroide());
+        }
+      }, 1500);
+
+      function dibujarAsteroides() {
+        for (let i = 0; i < asteroides.length; i++) {
+          ctx.beginPath();
+          ctx.arc(
+            asteroides[i].x,
+            asteroides[i].y,
+            asteroides[i].radio,
+            0,
+            Math.PI * 2,
+          );
+          ctx.strokeStyle = "#ffffff";
+          ctx.stroke();
+        }
+      }
+
+      function actualizarAsteroides() {
+        for (let i = 0; i < asteroides.length; i++) {
+          asteroides[i].x += asteroides[i].vx;
+          asteroides[i].y += asteroides[i].vy;
+        }
+      }
+
+      function limpiarAsteroides() {
+        asteroides = asteroides.filter(function (ast) {
+          return (
+            ast.x + ast.radio > 0 &&
+            ast.x - ast.radio < canvas.width &&
+            ast.y + ast.radio > 0 &&
+            ast.y - ast.radio < canvas.height
+          );
+        });
+      }
+
       function dibujar() {
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -139,10 +215,13 @@
 
           actualizarDisparos();
           limpiarDisparos();
+          actualizarAsteroides();
+          limpiarAsteroides();
         }
 
         dibujarNave();
         dibujarDisparos();
+        dibujarAsteroides();
 
         requestAnimationFrame(dibujar);
       }
@@ -171,7 +250,7 @@
 
             setTimeout(() => {
               puedeDisparar = true;
-            }, 100);
+            }, 150);
           }
         }
       });
