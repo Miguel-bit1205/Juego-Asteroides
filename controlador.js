@@ -33,7 +33,7 @@ export class Controlador {
       if (!this.modelo.gameOver) {
         this.modelo.agregarAsteroide();
       }
-    }, 1500);
+    }, 1000);
   }
 
   configurarTeclado() {

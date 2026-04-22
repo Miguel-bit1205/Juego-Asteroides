@@ -14,6 +14,9 @@ export class Modelo {
     this.vidas = 3;
     this.gameOver = false;
     this.puedeDisparar = true;
+
+    this.puntaje = 0;
+    this.invulnerable = false;
   }
 
   actualizarLimites(ancho, alto) {
@@ -22,11 +25,11 @@ export class Modelo {
   }
 
   girarIzquierda() {
-    this.nave.angulo -= 10;
+    this.nave.angulo -= 25;
   }
 
   girarDerecha() {
-    this.nave.angulo += 10;
+    this.nave.angulo += 25;
   }
 
   moverNave() {
@@ -127,9 +130,45 @@ export class Modelo {
       this.nave.y > this.alto
     );
   }
+  verificarColisionesBalas() {
+    for (let i = this.disparos.length - 1; i >= 0; i--) {
+      const bala = this.disparos[i];
+      for (let j = this.asteroides.length - 1; j >= 0; j--) {
+        const ast = this.asteroides[j];
+        const dx = bala.x - ast.x;
+        const dy = bala.y - ast.y;
+        const distancia = Math.hypot(dx, dy);
+        if (distancia < bala.radio + ast.radio) {
+          this.disparos.splice(i, 1);
+          this.asteroides.splice(j, 1);
+          this.puntaje += 100;
+          break;
+        }
+      }
+    }
+  }
+
+  verificarColisionNaveAsteroide() {
+    for (let i = 0; i < this.asteroides.length; i++) {
+      const ast = this.asteroides[i];
+      const dx = this.nave.x - ast.x;
+      const dy = this.nave.y - ast.y;
+      const distancia = Math.hypot(dx, dy);
+      if (distancia < ast.radio + 10) {
+        if (!this.invulnerable) {
+          this.perderVida();
+          if (!this.gameOver) {
+            this.asteroides.splice(i, 1);
+          }
+        }
+        break;
+      }
+    }
+  }
 
   perderVida() {
     if (this.gameOver) return;
+    if (this.invulnerable) return;
 
     this.vidas--;
 
@@ -140,19 +179,26 @@ export class Modelo {
       this.nave.x = this.ancho / 2;
       this.nave.y = this.alto / 2;
       this.nave.angulo = 0;
+
+      this.invulnerable = true;
+      setTimeout(() => {
+        this.invulnerable = false;
+      }, 3000);
     }
   }
 
   actualizar() {
     if (this.gameOver) return;
 
-    if (this.verificarSalidaNave()) {
-      this.perderVida();
-    }
-
     this.actualizarDisparos();
     this.limpiarDisparos();
     this.actualizarAsteroides();
     this.limpiarAsteroides();
+
+    this.verificarColisionesBalas();
+    if (this.verificarSalidaNave()) {
+      this.perderVida();
+    }
+    this.verificarColisionNaveAsteroide();
   }
 }
